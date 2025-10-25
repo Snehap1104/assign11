@@ -1,14 +1,12 @@
-# OpenJDK 21 runtime
 FROM openjdk:21-jdk-slim
 
-# Set working directory inside the container
 WORKDIR /app
 
-# Copy all files into container
-COPY . /app
+# Copy everything
+COPY . .
 
-# Compile Java source code
-RUN javac src/com/Main.java
+# Compile Java code
+RUN javac src/com/HelloWorld.java
 
-# Run the Java program
-CMD ["java", "-cp", "src", "Main"]
+# Run the program
+CMD ["java", "-cp", "src", "com.Main"]
