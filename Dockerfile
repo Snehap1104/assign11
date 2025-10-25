@@ -1,12 +1,14 @@
+# Use OpenJDK 21 slim image
 FROM openjdk:21-jdk-slim
 
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy everything
+# Copy all files from the repo to the container
 COPY . .
 
-# Compile Java code
-RUN javac src/com/HelloWorld.java
+# Compile the Java program
+RUN javac src/HelloWorld.java
 
-# Run the program
-CMD ["java", "-cp", "src", "com.Main"]
+# Run the Java program
+CMD ["java", "-cp", "src", "HelloWorld"]
