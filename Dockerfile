@@ -1,14 +1,14 @@
-# Start from an official JDK base image
-FROM openjdk:17-jdk-slim
+# OpenJDK 21 runtime
+FROM openjdk:22-jdk-slim
 
-# Set working directory inside container
+# Set working directory inside the container
 WORKDIR /app
 
-# Copy everything to /app
+# Copy all files into container
 COPY . /app
 
-# Compile the Java file
-RUN javac src/Main.java
+# Compile Java source code
+RUN javac src/com/Main.java
 
-# Set the default command to run your program
+# Run the Java program
 CMD ["java", "-cp", "src", "Main"]
