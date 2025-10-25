@@ -1,65 +1,37 @@
 pipeline {
     agent any
-    
+
     environment {
-        DOCKERHUB_CREDENTIALS = 'dockerhub'    // Jenkins credentials ID
-        IMAGE_NAME = 'sneha2311/assign11'      // Docker Hub repository
+        DOCKERHUB_CREDENTIALS = 'dockerhub'
+        IMAGE_NAME = 'sneha2311/assign11'
     }
-    
+
     stages {
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/Snehap1104/assign11.git'
+
             }
         }
-        
-        stage('Clean Docker Cache') {
+
+        stage('Build and Push Docker Image') {
             steps {
                 script {
-                    bat '''
-                        docker rmi %IMAGE_NAME%:latest || echo "Image not found, skipping removal"
-                        docker builder prune -f
-                    '''
-                }
-            }
-        }
-        
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    bat "docker build --no-cache -t %IMAGE_NAME%:latest ."
-                }
-            }
-        }
-        
-        stage('Push to Docker Hub') {
-            steps {
-                script {
-                    withCredentials([usernamePassword(
-                        credentialsId: 'dockerhub', 
-                        usernameVariable: 'DOCKER_USER', 
-                        passwordVariable: 'DOCKER_PASS'
-                    )]) {
-                        bat '''
-                            echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-                            docker push %IMAGE_NAME%:latest
-                            docker logout
-                        '''
+                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKERHUB_CREDENTIALS}") {
+                        def app = docker.build("${IMAGE_NAME}:latest")
+                        app.push()
                     }
                 }
             }
         }
     }
-    
+
     post {
         success {
             echo '✅ Docker image built and pushed successfully!'
         }
         failure {
-            echo '❌ Build failed!'
-        }
-        always {
-            bat 'docker logout || echo "Already logged out"'
+            echo '❌ Build failed. Check logs.'
         }
     }
 }
