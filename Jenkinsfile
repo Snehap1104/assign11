@@ -7,18 +7,31 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
+                // ✅ Checkout from main branch
                 git branch: 'main', url: 'https://github.com/Snehap1104/assign11.git'
             }
         }
 
-        stage('Build and Push Docker Image') {
+        stage('Build Docker Image') {
             steps {
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKERHUB_CREDENTIALS}") {
-                        def app = docker.build("${IMAGE_NAME}:latest")
-                        app.push()
+                    // ✅ Windows Jenkins agent command
+                    bat 'docker build -t %DOCKER_IMAGE%:latest .'
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    // ✅ Safely use Jenkins credentials here
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        bat """
+                            echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                            docker push %DOCKER_IMAGE%:latest
+                        """
                     }
                 }
             }
@@ -27,16 +40,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Docker image built and pushed successfully!"
+            echo '✅ Docker image built and pushed successfully!'
         }
         failure {
-            echo "❌ Pipeline failed. Check logs for details."
-        }
-        always {
-            echo "🧹 Cleaning up local Docker images..."
-            script {
-                sh 'docker system prune -f'
-            }
+            echo '❌ Build failed!'
         }
     }
 }
