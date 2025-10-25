@@ -9,7 +9,6 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Checkout the main branch from GitHub
                 git branch: 'main', url: 'https://github.com/Snehap1104/assign11.git'
             }
         }
@@ -17,8 +16,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build Docker image with the correct environment variable
-                    bat 'docker build -t %IMAGE_NAME%:latest .'
+                    bat "docker build -t %IMAGE_NAME%:latest ."
                 }
             }
         }
@@ -26,10 +24,9 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    // Use Jenkins credentials to login and push
                     withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         bat """
-                            echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                            docker login -u %DOCKER_USER% -p %DOCKER_PASS%
                             docker push %IMAGE_NAME%:latest
                         """
                     }
