@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = 'dockerhub'   // Jenkins credentials ID
-        IMAGE_NAME = 'sneha2311/assign11'              // Replace with your DockerHub repo
+        DOCKERHUB_CREDENTIALS = 'dockerhub'    // Jenkins credentials ID
+        IMAGE_NAME = 'sneha2311/assign11'      // Docker Hub repository
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // ✅ Checkout from main branch
+                // Checkout the main branch from GitHub
                 git branch: 'main', url: 'https://github.com/Snehap1104/assign11.git'
             }
         }
@@ -17,8 +17,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // ✅ Windows Jenkins agent command
-                    bat 'docker build -t %DOCKER_IMAGE%:latest .'
+                    // Build Docker image with the correct environment variable
+                    bat 'docker build -t %IMAGE_NAME%:latest .'
                 }
             }
         }
@@ -26,11 +26,11 @@ pipeline {
         stage('Push to Docker Hub') {
             steps {
                 script {
-                    // ✅ Safely use Jenkins credentials here
+                    // Use Jenkins credentials to login and push
                     withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         bat """
                             echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-                            docker push %DOCKER_IMAGE%:latest
+                            docker push %IMAGE_NAME%:latest
                         """
                     }
                 }
