@@ -1,5 +1,5 @@
 # OpenJDK 21 runtime
-FROM openjdk:22-jdk-slim
+FROM openjdk:21-jdk-slim
 
 # Set working directory inside the container
 WORKDIR /app
