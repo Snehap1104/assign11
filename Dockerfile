@@ -1,14 +1,11 @@
-# Use OpenJDK image
-FROM openjdk:17-jdk-slim
-
-# Create app directory
+# Build stage
+FROM openjdk:17-slim AS build
 WORKDIR /app
+COPY src/ ./src/
+RUN javac src/*.java
 
-# Copy source code
-COPY src /app/src
-
-# Compile the Java file
-RUN javac src/HelloWorld.java
-
-# Set the entry point
+# Run stage
+FROM openjdk:17-slim
+WORKDIR /app
+COPY --from=build /app/src /app/src
 CMD ["java", "-cp", "src", "HelloWorld"]
