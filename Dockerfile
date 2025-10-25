@@ -1,11 +1,14 @@
-# Build stage
-FROM openjdk:17-slim AS build
-WORKDIR /app
-COPY src/ ./src/
-RUN javac src/*.java
+# Start from an official JDK base image
+FROM openjdk:17-jdk-slim
 
-# Run stage
-FROM openjdk:17-slim
+# Set working directory inside container
 WORKDIR /app
-COPY --from=build /app/src /app/src
-CMD ["java", "-cp", "src", "HelloWorld"]
+
+# Copy everything to /app
+COPY . /app
+
+# Compile the Java file
+RUN javac src/Main.java
+
+# Set the default command to run your program
+CMD ["java", "-cp", "src", "Main"]
