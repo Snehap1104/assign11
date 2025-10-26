@@ -2,15 +2,14 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = 'dockerhub'
-        IMAGE_NAME = 'sneha2311/assign11'
+        DOCKERHUB_CREDENTIALS = 'dockerhub'  // Your Jenkins DockerHub credentials ID
+        IMAGE_NAME = 'sneha2311/assign11'    // Docker Hub repo name
     }
 
     stages {
         stage('Checkout Code') {
             steps {
                 git branch: 'main', url: 'https://github.com/Snehap1104/assign11.git'
-
             }
         }
 
